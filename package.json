@@ -1,6 +1,6 @@
 {
     "name": "cessie",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Transpile your CSS bundle to support IE11 for CSS variables, calc, and future CSS.",
     "main": "index.js",
     "bin": {
@@ -9,6 +9,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
+    "keywords": ["ie11", "css variables", "css calc", "postcss", "transpile"],
     "author": "Bjarne Oeverli",
     "license": "MIT",
     "repository": "bjarneo/cessie",
