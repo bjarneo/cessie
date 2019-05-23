@@ -1,0 +1,27 @@
+{
+    "name": "cessie",
+    "version": "1.0.1",
+    "description": "Transpile your CSS bundle to support IE11 for CSS variables, calc, and future CSS.",
+    "main": "index.js",
+    "bin": {
+        "cessie": "./bin.js"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Bjarne Oeverli",
+    "license": "MIT",
+    "repository": "bjarneo/cessie",
+    "dependencies": {
+        "autoprefixer": "^9.5.1",
+        "csso": "^3.5.1",
+        "file-extension": "^4.0.5",
+        "less": "^3.9.0",
+        "meow": "^5.0.0",
+        "node-sass": "^4.12.0",
+        "postcss": "^7.0.16",
+        "postcss-calc": "^7.0.1",
+        "postcss-css-variables": "^0.12.0",
+        "postcss-preset-env": "^6.6.0"
+    }
+}
