@@ -1,6 +1,6 @@
 {
     "name": "cessie",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Transpile your CSS bundle to support IE11 for CSS variables, calc, and future CSS.",
     "main": "index.js",
     "bin": {

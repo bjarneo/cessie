@@ -67,7 +67,7 @@ async function getFileContent(inputFile) {
         fs.createReadStream(inputFile)
         .on('data', chunk => chunks.push(chunk))
         .on('error', err => reject(err))
-        .on('close', () => resolve(chunks)));
+        .on('close', () => resolve(chunks.join(''))));
 }
 
 async function writeFileContent(outfile, content) {
