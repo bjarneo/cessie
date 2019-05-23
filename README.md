@@ -77,11 +77,8 @@ button {
         --font-color: tomato;
 
         padding: calc(var(--padding) * 2);
-    }
-
-    .some-class {
-        --background-color: #bad;
-        --font-color: #171717;
+        background-color: var(--background-color);
+        color: var(--font-color);
     }
 
     &:hover {
@@ -116,6 +113,8 @@ button {
 }
 button .some-third-class {
   padding: 20px;
+  background-color: steelblue;
+  color: tomato;
 }
 button:hover {
   opacity: 0.5;
