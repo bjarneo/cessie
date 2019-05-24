@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const watchFile = require('node-watch');
 const meow = require('meow');
 const fileExtension = require('file-extension');
@@ -40,15 +41,24 @@ const cli = meow(`
     }
 });
 
-const transpileSass = content =>
-    sass.renderSync({
-        data: content,
-    }).css;
+const transpileSass = (content) => {
+    try {
+        return sass.renderSync({
+            data: content,
+        }).css;
+    } catch (e) {
+        console.error(e);
+    }
+}
 
 const transpileLess = async content => {
-    const { css } = await less.render(content);
+    try {
+        const { css } = await less.render(content);
 
-    return css;
+        return css;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 async function transpile(content, inputFile) {
@@ -117,18 +127,26 @@ async function main() {
         return (minify && !watch) ? csso.minify(css).css : css;
     };
 
+    await writeFileContent(outfile, await generateCSS());
+
     if (watch) {
-        watchFile(inputFile, async (event, name) => {
+        const folder = path.resolve(path.dirname(inputFile));
+
+        const opts = {
+            filter: new RegExp(`\\${path.extname(inputFile)}$`),
+            recursive: true,
+        };
+
+        console.log(folder)
+
+        const watcher = watchFile(folder, opts, async (event, name) => {
             console.log(` [*] Watching and writing ${inputFile} to ${outfile}`);
 
-            if (event === 'update' && inputFile === name) {
-                await writeFileContent(outfile, await generateCSS());
-            }
-
+            await writeFileContent(outfile, await generateCSS());
         });
-    } else {
-        await writeFileContent(outfile, await generateCSS());
 
+        watcher.on('error', err => console.error(' [x] %s', err));
+    } else {
         console.log(` [*] Finished writing file: ${outfile}`);
     }
 }
