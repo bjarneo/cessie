@@ -12,6 +12,7 @@
 - Can transpile SCSS, SASS, and LESS.
 - Can minify the output if not already minified.
 - Watch mode.
+- Source map.
 
 
 ## Case
@@ -46,9 +47,10 @@ $ cessie inputFile.css -o ie11.css
       $ cessie <input> -o filename.css
 
     Options
-      --outfile, -o Name of the outfile
-      --minify,  -m Minify css. Defaults to true.
-      --watch,   -w Watch for file changes. Defaults to false.
+      --outFile,    -o Name of the outfile
+      --minify,     -m Minify css. Defaults to true.
+      --watch,      -w Watch for file changes. Defaults to false.
+      --source-map, -s Generate source map. Defaults to true.
 
     Examples
       $ cessie bundle.css -o ie11.css
@@ -134,10 +136,6 @@ div {
 }
 
 ```
-
-
-## Todo
-- Source map
 
 
 ## Want features?
