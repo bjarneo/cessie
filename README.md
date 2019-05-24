@@ -1,6 +1,6 @@
-# cessie [css ie]
+# cessie
 
-> Transpile your CSS bundle to support IE11 for CSS variables, calc, and future CSS.
+> Transpile your CSS bundle to support CSS variables, calc, and future CSS for legacy browsers.
 
 
 ## Features
