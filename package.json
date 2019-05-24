@@ -9,7 +9,13 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },
-    "keywords": ["ie11", "css variables", "css calc", "postcss", "transpile"],
+    "keywords": [
+        "ie11",
+        "css variables",
+        "css calc",
+        "postcss",
+        "transpile"
+    ],
     "author": "Bjarne Oeverli",
     "license": "MIT",
     "repository": "bjarneo/cessie",
@@ -18,8 +24,10 @@
         "csso": "^3.5.1",
         "file-extension": "^4.0.5",
         "less": "^3.9.0",
+        "log-timestamp": "^0.3.0",
         "meow": "^5.0.0",
         "node-sass": "^4.12.0",
+        "node-watch": "^0.6.2",
         "postcss": "^7.0.16",
         "postcss-calc": "^7.0.1",
         "postcss-css-variables": "^0.12.0",

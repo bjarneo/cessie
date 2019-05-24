@@ -1,10 +1,13 @@
 const fs = require('fs');
+const watchFile = require('node-watch');
 const meow = require('meow');
 const fileExtension = require('file-extension');
 const postcss = require('postcss');
 const sass = require('node-sass');
 const less = require('less');
 const csso = require('csso');
+
+require('log-timestamp');
 
 const cli = meow(`
     Usage
@@ -13,6 +16,7 @@ const cli = meow(`
     Options
       --outfile, -o Name of the outfile
       --minify,  -m Minify css. Defaults to true.
+      --watch,   -w Watch for file changes. Defaults to false.
 
     Examples
       $ cessie bundle.css -o ie11.css
@@ -27,6 +31,11 @@ const cli = meow(`
             type: 'boolean',
             alias: 'm',
             default: true
+        },
+        watch: {
+            type: 'boolean',
+            alias: 'w',
+            default: false
         }
     }
 });
@@ -83,7 +92,7 @@ async function writeFileContent(outfile, content) {
 async function main() {
     const [inputFile] = cli.input;
 
-    const { outfile, minify } = cli.flags;
+    const { outfile, minify, watch } = cli.flags;
 
     if (!inputFile) {
         console.log(' [x] No input file');
@@ -93,22 +102,35 @@ async function main() {
 
     console.log(` [*] Transpiling ${inputFile} to ${outfile}`);
 
-    const inputCSS = await getFileContent(inputFile);
+    const generateCSS = async () => {
+        const inputCSS = await getFileContent(inputFile);
 
-    const toCSS = await transpile(inputCSS.toString(), inputFile);
+        const toCSS = await transpile(inputCSS.toString(), inputFile);
 
-    const { css } = await postcss([
-        require('postcss-css-variables')({ preserve: false }),
-        require('autoprefixer'),
-        require('postcss-calc'),
-        require('postcss-preset-env')
-    ]).process(toCSS, { from: false });
+        const { css } = await postcss([
+            require('postcss-css-variables')({ preserve: false }),
+            require('autoprefixer'),
+            require('postcss-calc'),
+            require('postcss-preset-env')
+        ]).process(toCSS, { from: false });
 
-    const outCSS = minify ? csso.minify(css).css : css;
+        return (minify && !watch) ? csso.minify(css).css : css;
+    };
 
-    await writeFileContent(outfile, outCSS);
+    if (watch) {
+        watchFile(inputFile, async (event, name) => {
+            console.log(` [*] Watching and writing ${inputFile} to ${outfile}`);
 
-    console.log(` [*] Finished writing file: ${outfile}`);
+            if (event === 'update' && inputFile === name) {
+                await writeFileContent(outfile, await generateCSS());
+            }
+
+        });
+    } else {
+        await writeFileContent(outfile, await generateCSS());
+
+        console.log(` [*] Finished writing file: ${outfile}`);
+    }
 }
 
 main();
