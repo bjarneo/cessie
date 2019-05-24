@@ -137,8 +137,6 @@ async function main() {
             recursive: true,
         };
 
-        console.log(folder)
-
         const watcher = watchFile(folder, opts, async (event, name) => {
             console.log(` [*] Watching and writing ${inputFile} to ${outfile}`);
 
