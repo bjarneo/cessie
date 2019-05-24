@@ -41,19 +41,26 @@ const cli = meow(`
     }
 });
 
-const transpileSass = (content) => {
+const transpileSass = (content, outFile) => {
     try {
         return sass.renderSync({
             data: content,
+            outFile: outFile,
+            sourceMap: true,
         }).css;
     } catch (e) {
         console.error(e);
     }
 }
 
-const transpileLess = async content => {
+const transpileLess = async (content, outFile) => {
+    console.log(outFile)
     try {
-        const { css } = await less.render(content);
+        const { css } = await less.render(content, {
+            sourceMap: {
+                outputFilename: outFile + '.map',
+            },
+        });
 
         return css;
     } catch (e) {
@@ -61,7 +68,7 @@ const transpileLess = async content => {
     }
 }
 
-async function transpile(content, inputFile) {
+async function transpile(content, inputFile, outFile) {
     const extension = fileExtension(inputFile);
 
     switch (extension) {
@@ -69,13 +76,13 @@ async function transpile(content, inputFile) {
             return content;
 
         case 'scss':
-            return await transpileSass(content);
+            return await transpileSass(content, outFile);
 
         case 'sass':
-            return await transpileSass(content);
+            return await transpileSass(content, outFile);
 
         case 'less':
-            return await transpileLess(content);
+            return await transpileLess(content, outFile);
     }
 }
 
@@ -115,16 +122,16 @@ async function main() {
     const generateCSS = async () => {
         const inputCSS = await getFileContent(inputFile);
 
-        const toCSS = await transpile(inputCSS.toString(), inputFile);
-
         const { css } = await postcss([
             require('postcss-css-variables')({ preserve: false }),
             require('autoprefixer'),
             require('postcss-calc'),
             require('postcss-preset-env')
-        ]).process(toCSS, { from: false });
+        ]).process(inputCSS, { from: false });
 
-        return (minify && !watch) ? csso.minify(css).css : css;
+        const toCSS = await transpile(css, inputFile, outfile);
+
+        return (minify && !watch) ? csso.minify(toCSS).css : toCSS;
     };
 
     await writeFileContent(outfile, await generateCSS());
