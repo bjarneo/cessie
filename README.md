@@ -2,6 +2,7 @@
 
 > Transpile your CSS bundle to support CSS variables, calc, and future CSS for legacy browsers.
 
+![cessie logo](https://github.com/bjarneo/cessie/blob/master/logo.png?raw=true)
 
 ## Features
 
