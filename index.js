@@ -15,9 +15,10 @@ const cli = meow(`
       $ cessie <input> -o filename.css
 
     Options
-      --outfile, -o Name of the outfile
-      --minify,  -m Minify css. Defaults to true.
-      --watch,   -w Watch for file changes. Defaults to false.
+      --outFile,    -o Name of the outfile
+      --minify,     -m Minify css. Defaults to true.
+      --watch,      -w Watch for file changes. Defaults to false.
+      --source-map, -s Generate source map. Defaults to true.
 
     Examples
       $ cessie bundle.css -o ie11.css
@@ -37,56 +38,65 @@ const cli = meow(`
             type: 'boolean',
             alias: 'w',
             default: false
+        },
+        'source-map': {
+            type: 'boolean',
+            alias: 's',
+            default: true
         }
     }
 });
 
-const transpileSass = (content, outFile) => {
+const [inputFile] = cli.input;
+const { outfile, minify, watch, sourceMap } = cli.flags;
+
+const transpileSass = (content) => {
     try {
-        return sass.renderSync({
+        const { css, map } = sass.renderSync({
             data: content,
-            outFile: outFile,
+            outFile: outfile,
             sourceMap: true,
-        }).css;
+        });
+
+        return { css, map };
     } catch (e) {
         console.error(e);
     }
 }
 
-const transpileLess = async (content, outFile) => {
-    console.log(outFile)
+const transpileLess = async (content) => {
     try {
-        const { css } = await less.render(content, {
+        const { css, map } = await less.render(content, {
             sourceMap: {
-                outputFilename: outFile + '.map',
+                outputFilename: outfile + '.map',
             },
         });
 
-        return css;
+        return { css, map };
     } catch (e) {
         console.error(e);
     }
 }
 
-async function transpile(content, inputFile, outFile) {
+async function transpile(content) {
     const extension = fileExtension(inputFile);
 
     switch (extension) {
         case 'css':
-            return content;
+            return { css: content, map: '' };
 
         case 'scss':
-            return await transpileSass(content, outFile);
+            return await transpileSass(content);
 
         case 'sass':
-            return await transpileSass(content, outFile);
+            return await transpileSass(content);
 
         case 'less':
-            return await transpileLess(content, outFile);
+            return await transpileLess(content);
     }
 }
 
-async function getFileContent(inputFile) {
+async function getFileContent() {
     const chunks = [];
 
     return new Promise((resolve, reject) =>
@@ -106,11 +116,33 @@ async function writeFileContent(outfile, content) {
     });
 }
 
+function addSourceMapURL(css) {
+    if (sourceMap) {
+        css += ` /* # sourceMappingURL=${path.basename(outfile)}.map */`;
+    }
+
+    return css;
+}
+
+async function generateCSS() {
+    const { css } = await postcss([
+        require('postcss-css-variables')({ preserve: false }),
+        require('autoprefixer'),
+        require('postcss-calc'),
+        require('postcss-preset-env')
+    ]).process(await getFileContent(), { from: false });
+
+    const toCSS = await transpile(css);
+
+    const minified = (minify && !watch) ? csso.minify(toCSS.css).css : toCSS.css;
+
+    return {
+        css: addSourceMapURL(minified),
+        map: toCSS.map,
+    };
+};
+
 async function main() {
-    const [inputFile] = cli.input;
-
-    const { outfile, minify, watch } = cli.flags;
-
     if (!inputFile) {
         console.log(' [x] No input file');
 
@@ -118,23 +150,6 @@ async function main() {
     }
 
     console.log(` [*] Transpiling ${inputFile} to ${outfile}`);
-
-    const generateCSS = async () => {
-        const inputCSS = await getFileContent(inputFile);
-
-        const { css } = await postcss([
-            require('postcss-css-variables')({ preserve: false }),
-            require('autoprefixer'),
-            require('postcss-calc'),
-            require('postcss-preset-env')
-        ]).process(inputCSS, { from: false });
-
-        const toCSS = await transpile(css, inputFile, outfile);
-
-        return (minify && !watch) ? csso.minify(toCSS).css : toCSS;
-    };
-
-    await writeFileContent(outfile, await generateCSS());
 
     if (watch) {
         const folder = path.resolve(path.dirname(inputFile));
@@ -147,13 +162,23 @@ async function main() {
         const watcher = watchFile(folder, opts, async (event, name) => {
             console.log(` [*] Watching and writing ${inputFile} to ${outfile}`);
 
-            await writeFileContent(outfile, await generateCSS());
+            const { css, map } = await generateCSS();
+
+            await writeFileContent(outfile, css);
         });
 
         watcher.on('error', err => console.error(' [x] %s', err));
-    } else {
-        console.log(` [*] Finished writing file: ${outfile}`);
     }
+
+    const { css, map } = await generateCSS();
+
+    writeFileContent(outfile, css);
+
+    if (sourceMap) {
+        writeFileContent(outfile + '.map', map);
+    }
+
+    console.log(` [*] Finished writing file: ${outfile}`);
 }
 
 main();

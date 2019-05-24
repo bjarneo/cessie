@@ -4,4 +4,5 @@ mybundle.*
 *.scss
 *.sass
 *.less
+*.css.map
 css/
