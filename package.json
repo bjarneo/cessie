@@ -1,7 +1,7 @@
 {
     "name": "cessie",
-    "version": "1.2.1",
-    "description": "Transpile your CSS bundle to support CSS variables, calc, and future CSS for legacy browsers.",
+    "version": "1.2.2",
+    "description": "Transpile your CSS bundle to support CSS variables, calc, and future CSS for non supported browsers.",
     "main": "index.js",
     "bin": {
         "cessie": "./bin.js"

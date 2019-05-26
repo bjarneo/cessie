@@ -58,85 +58,30 @@ $ cessie inputFile.css -o ie11.css
 ```
 
 
-## Example
-
-mybundle.less
+## Examples
 ```
+// css/sass/less file
 :root {
-  --background-color: #dd0000;
-  --font-color: #fff;
+  --color: white;
   --padding: 10px;
-  --border-color: #bad;
 }
-
-button {
-    color: var(--font-color);
-    border: none;
-    padding: 20px 30px;
-    font-size: 24px;
-    background-color: var(--background-color);
-    cursor: pointer;
-    transition: opacity .15s ease-in-out;
-    border-radius: 1px solid var(--border-color);
-
-    .some-third-class {
-        --background-color: steelblue;
-        --font-color: tomato;
-
-        padding: calc(var(--padding) * 2);
-        background-color: var(--background-color);
-        color: var(--font-color);
-    }
-
-    &:hover {
-        opacity: 0.5;
-        transform: scale(0.5);
-    }
-}
-
-@bg: black;
-@bg-light: boolean(luma(@bg) > 50%);
 
 div {
-  background: @bg;
-  color: if(@bg-light, black, white);
+  color: var(--color);
+  padding: calc(var(--padding) * 2);
 }
 
-```
+// Run cessie with no minify
+$ cessie my.css -o output.css -m false
 
-Run cessie
-```
-$ cessie mybundle.less -o output.css -m false
-```
-
-output.css
-```
-button {
-  color: #fff;
-  border: none;
-  padding: 20px 30px;
-  font-size: 24px;
-  background-color: #dd0000;
-  cursor: pointer;
-  transition: opacity 0.15s ease-in-out;
-  border-radius: 1px solid #bad;
-}
-button .some-third-class {
-  padding: 20px;
-  background-color: steelblue;
-  color: tomato;
-}
-button:hover {
-  opacity: 0.5;
-  -webkit-transform: scale(0.5);
-          transform: scale(0.5);
-}
+// output.css
 div {
-  background: black;
   color: white;
+  padding: 20px;
 }
-
 ```
+
+See more [examples](https://github.com/bjarneo/cessie/blob/master/EXAMPLES.md)
 
 
 ## Want features?
