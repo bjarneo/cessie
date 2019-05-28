@@ -1,8 +1,14 @@
-# cessie
+<br>
 
-> Transpile your CSS bundle to support CSS variables, calc, and future CSS for legacy browsers.
+<p align="center">
+  <a href="https://github.com/bjarneo/cessie">
+    <img src="https://github.com/bjarneo/cessie/blob/master/logo.png?raw=true" alt="cessie logo" />
+  </a>
+</p>
 
-![cessie logo](https://github.com/bjarneo/cessie/blob/master/logo.png?raw=true)
+<h1 align="center">cessie</h1>
+
+<blockquote align="center">Transpile your CSS bundle to support CSS variables, calc, and future CSS for legacy browsers.</blockquote>
 
 ## Features
 
