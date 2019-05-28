@@ -165,7 +165,7 @@ async function main() {
         const watcher = watchFile(folder, opts, async (event, name) => {
             console.log(` [*] Watching and writing ${inputFile} to ${outfile}`);
 
-            const { css, map } = await generateCSS();
+            const { css } = await generateCSS();
 
             await writeFileContent(outfile, css);
         });
