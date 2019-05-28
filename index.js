@@ -6,7 +6,6 @@ const fileExtension = require('file-extension');
 const postcss = require('postcss');
 const sass = require('node-sass');
 const less = require('less');
-const csso = require('csso');
 
 require('log-timestamp');
 
@@ -125,20 +124,24 @@ function addSourceMapURL(css) {
 }
 
 async function generateCSS() {
-    const { css } = await postcss([
+    const plugins = [
         require('postcss-css-variables')({ preserve: false }),
         require('autoprefixer'),
         require('postcss-calc'),
         require('postcss-preset-env')
-    ]).process(await getFileContent(), { from: false });
+    ];
 
-    const toCSS = await transpile(css);
+    const transpiled = await transpile(await getFileContent());
 
-    const minified = (minify && !watch) ? csso.minify(toCSS.css).css : toCSS.css;
+    if (minify && !watch) {
+        plugins.push(require('postcss-csso'));
+    }
+
+    const { css } = await postcss(plugins).process(transpiled.css, { from: false });
 
     return {
-        css: addSourceMapURL(minified),
-        map: toCSS.map,
+        css: addSourceMapURL(css),
+        map: transpiled.map,
     };
 };
 
