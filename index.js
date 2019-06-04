@@ -49,12 +49,17 @@ const cli = meow(`
             type: 'string',
             alias: 'i',
             default: ''
+        },
+        'export-to': {
+            type: 'string',
+            alias: 'e',
+            default: ''
         }
     }
 });
 
 const [inputFile] = cli.input;
-const { outfile, minify, watch, sourceMap, importFrom } = cli.flags;
+const { outfile, minify, watch, sourceMap, importFrom, exportTo } = cli.flags;
 
 const transpileSass = (content) => {
     try {
