@@ -14,7 +14,7 @@
 
 - Uses PostCSS behind the scenes.
 - Transpiles future CSS by using `postcss-preset-env`.
-- Transpiles CSS variables and calc by using `postcss-css-variables`, and `postcss-calc`.
+- Transpiles CSS variables and calc by using `postcss-custom-properties`, and `postcss-calc`.
 - Can be used for all CSS bundles.
 - Can transpile SCSS, SASS, and LESS.
 - Can minify the output if not already minified.
@@ -54,10 +54,11 @@ $ cessie inputFile.css -o ie11.css
       $ cessie <input> -o filename.css
 
     Options
-      --outFile,    -o Name of the outfile
-      --minify,     -m Minify css. Defaults to true.
-      --watch,      -w Watch for file changes. Defaults to false.
-      --source-map, -s Generate source map. Defaults to true.
+      --outFile,     -o Name of the outfile
+      --minify,      -m Minify css. Defaults to true.
+      --watch,       -w Watch for file changes. Defaults to false.
+      --source-map,  -s Generate source map. Defaults to true.
+      --import-from, -i Import CSS variables from file (https://github.com/postcss/postcss-custom-properties#importfrom)
 
     Examples
       $ cessie bundle.css -o ie11.css

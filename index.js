@@ -14,10 +14,11 @@ const cli = meow(`
       $ cessie <input> -o filename.css
 
     Options
-      --outFile,    -o Name of the outfile
-      --minify,     -m Minify css. Defaults to true.
-      --watch,      -w Watch for file changes. Defaults to false.
-      --source-map, -s Generate source map. Defaults to true.
+      --outFile,     -o Name of the outfile
+      --minify,      -m Minify css. Defaults to true.
+      --watch,       -w Watch for file changes. Defaults to false.
+      --source-map,  -s Generate source map. Defaults to true.
+      --import-from, -i Import CSS variables from file (https://github.com/postcss/postcss-custom-properties#importfrom)
 
     Examples
       $ cessie bundle.css -o ie11.css
@@ -42,12 +43,17 @@ const cli = meow(`
             type: 'boolean',
             alias: 's',
             default: true
+        },
+        'import-from': {
+            type: 'string',
+            alias: 'i',
+            default: ''
         }
     }
 });
 
 const [inputFile] = cli.input;
-const { outfile, minify, watch, sourceMap } = cli.flags;
+const { outfile, minify, watch, sourceMap, importFrom } = cli.flags;
 
 const transpileSass = (content) => {
     try {
@@ -124,14 +130,22 @@ function addSourceMapURL(css) {
 }
 
 async function generateCSS() {
-    const plugins = [
-        require('postcss-css-variables')({ preserve: false }),
-        require('autoprefixer'),
-        require('postcss-calc'),
-        require('postcss-preset-env')
-    ];
-
     const transpiled = await transpile(await getFileContent());
+
+    const plugins = [];
+
+    const customProps = { preserve: false };
+
+    if (importFrom) {
+        customProps.importFrom = importFrom;
+    }
+
+    plugins.push(...[
+        require('postcss-custom-properties')(customProps),
+        require('postcss-calc'),
+        require('autoprefixer'),
+        require('postcss-preset-env')
+    ]);
 
     if (minify && !watch) {
         plugins.push(require('postcss-csso'));
