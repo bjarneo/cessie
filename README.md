@@ -59,6 +59,7 @@ $ cessie inputFile.css -o ie11.css
       --watch,       -w Watch for file changes. Defaults to false.
       --source-map,  -s Generate source map. Defaults to true.
       --import-from, -i Import CSS variables from file (https://github.com/postcss/postcss-custom-properties#importfrom)
+      --export-to,   -e Export CSS variables to file (https://github.com/postcss/postcss-custom-properties#exportto)
 
     Examples
       $ cessie bundle.css -o ie11.css

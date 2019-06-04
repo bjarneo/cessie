@@ -19,6 +19,7 @@ const cli = meow(`
       --watch,       -w Watch for file changes. Defaults to false.
       --source-map,  -s Generate source map. Defaults to true.
       --import-from, -i Import CSS variables from file (https://github.com/postcss/postcss-custom-properties#importfrom)
+      --export-to,   -e Export CSS variables to file (https://github.com/postcss/postcss-custom-properties#exportto)
 
     Examples
       $ cessie bundle.css -o ie11.css
@@ -134,14 +135,8 @@ async function generateCSS() {
 
     const plugins = [];
 
-    const customProps = { preserve: false };
-
-    if (importFrom) {
-        customProps.importFrom = importFrom;
-    }
-
     plugins.push(...[
-        require('postcss-custom-properties')(customProps),
+        require('postcss-custom-properties')({ preserve: false, exportTo, importFrom }),
         require('postcss-calc'),
         require('autoprefixer'),
         require('postcss-preset-env')
