@@ -14,18 +14,18 @@ const cli = meow(`
       $ cessie <input> -o filename.css
 
     Options
-      --outFile,     -o Name of the outfile
-      --minify,      -m Minify css. Defaults to true.
-      --watch,       -w Watch for file changes. Defaults to false.
-      --source-map,  -s Generate source map. Defaults to true.
-      --import-from, -i Import CSS variables from file (https://github.com/postcss/postcss-custom-properties#importfrom)
-      --export-to,   -e Export CSS variables to file (https://github.com/postcss/postcss-custom-properties#exportto)
+      --out-file,     -o Name of the out file
+      --minify,       -m Minify css. Defaults to true.
+      --watch,        -w Watch for file changes. Defaults to false.
+      --source-map,   -s Generate source map. Defaults to true.
+      --import-from,  -i Import CSS variables from file (https://github.com/postcss/postcss-custom-properties#importfrom)
+      --export-to,    -e Export CSS variables to file (https://github.com/postcss/postcss-custom-properties#exportto)
 
     Examples
       $ cessie bundle.css -o ie11.css
 `, {
     flags: {
-        outfile: {
+        'out-file': {
             type: 'string',
             alias: 'o',
             default: 'ie11.css'
@@ -59,14 +59,14 @@ const cli = meow(`
 });
 
 const [inputFile] = cli.input;
-const { outfile, minify, watch, sourceMap, importFrom, exportTo } = cli.flags;
+const { outFile, minify, watch, sourceMap, importFrom, exportTo } = cli.flags;
 
 const transpileSass = (content) => {
     try {
         const { css, map } = sass.renderSync({
             data: content,
-            outFile: outfile,
             sourceMap: true,
+            outFile,
         });
 
         return { css, map };
@@ -79,7 +79,7 @@ const transpileLess = async (content) => {
     try {
         const { css, map } = await less.render(content, {
             sourceMap: {
-                outputFilename: outfile + '.map',
+                outputFilename: outFile + '.map',
             },
         });
 
@@ -117,9 +117,9 @@ async function getFileContent() {
         .on('close', () => resolve(chunks.join(''))));
 }
 
-async function writeFileContent(outfile, content) {
+async function writeFileContent(outFile, content) {
     return new Promise((resolve, reject) => {
-        const file = fs.createWriteStream(outfile);
+        const file = fs.createWriteStream(outFile);
 
         file.write(content);
 
@@ -129,7 +129,7 @@ async function writeFileContent(outfile, content) {
 
 function addSourceMapURL(css) {
     if (sourceMap) {
-        css += ` /* # sourceMappingURL=${path.basename(outfile)}.map */`;
+        css += ` /* # sourceMappingURL=${path.basename(outFile)}.map */`;
     }
 
     return css;
@@ -166,7 +166,7 @@ async function main() {
         return;
     }
 
-    console.log(` [*] Transpiling ${inputFile} to ${outfile}`);
+    console.log(` [*] Transpiling ${inputFile} to ${outFile}`);
 
     if (watch) {
         const folder = path.resolve(path.dirname(inputFile));
@@ -177,11 +177,11 @@ async function main() {
         };
 
         const watcher = watchFile(folder, opts, async (event, name) => {
-            console.log(` [*] Watching and writing ${inputFile} to ${outfile}`);
+            console.log(` [*] Watching and writing ${inputFile} to ${outFile}`);
 
             const { css } = await generateCSS();
 
-            await writeFileContent(outfile, css);
+            await writeFileContent(outFile, css);
         });
 
         watcher.on('error', err => console.error(' [x] %s', err));
@@ -189,13 +189,13 @@ async function main() {
 
     const { css, map } = await generateCSS();
 
-    writeFileContent(outfile, css);
+    writeFileContent(outFile, css);
 
     if (sourceMap) {
-        writeFileContent(outfile + '.map', map);
+        writeFileContent(outFile + '.map', map);
     }
 
-    console.log(` [*] Finished writing file: ${outfile}`);
+    console.log(` [*] Finished writing file: ${outFile}`);
 }
 
 main();
