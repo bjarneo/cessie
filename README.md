@@ -54,7 +54,7 @@ $ cessie inputFile.css -o ie11.css
       $ cessie <input> -o filename.css
 
     Options
-      --out-file,     -o Name of the out file
+      --out-file,    -o Name of the out file
       --minify,      -m Minify css. Defaults to true.
       --watch,       -w Watch for file changes. Defaults to false.
       --source-map,  -s Generate source map. Defaults to true.
