@@ -10,7 +10,8 @@ const cssParser = require('css');
 
 require('log-timestamp');
 
-const cli = meow(`
+const cli = meow(
+    `
     Usage
       $ cessie <input> -o filename.css
 
@@ -24,40 +25,42 @@ const cli = meow(`
 
     Examples
       $ cessie bundle.css -o ie11.css
-`, {
-    flags: {
-        'out-file': {
-            type: 'string',
-            alias: 'o',
-            default: 'ie11.css'
+`,
+    {
+        flags: {
+            'out-file': {
+                type: 'string',
+                alias: 'o',
+                default: 'ie11.css',
+            },
+            minify: {
+                type: 'boolean',
+                alias: 'm',
+                default: true,
+            },
+            watch: {
+                type: 'boolean',
+                alias: 'w',
+                default: false,
+            },
+            'source-map': {
+                type: 'boolean',
+                alias: 's',
+                default: true,
+            },
+            'import-from': {
+                type: 'string',
+                alias: 'i',
+                default: '',
+            },
+            'export-to': {
+                type: 'string',
+                alias: 'e',
+                default: '',
+            },
         },
-        minify: {
-            type: 'boolean',
-            alias: 'm',
-            default: true
-        },
-        watch: {
-            type: 'boolean',
-            alias: 'w',
-            default: false
-        },
-        'source-map': {
-            type: 'boolean',
-            alias: 's',
-            default: true
-        },
-        'import-from': {
-            type: 'string',
-            alias: 'i',
-            default: ''
-        },
-        'export-to': {
-            type: 'string',
-            alias: 'e',
-            default: ''
-        }
     }
-});
+);
 
 const [inputFile] = cli.input;
 const { outFile, minify, watch, sourceMap, importFrom, exportTo } = cli.flags;
@@ -70,7 +73,7 @@ const transpileCss = (content) => {
     } catch (e) {
         console.error(e);
     }
-}
+};
 
 const transpileSass = (content) => {
     try {
@@ -84,7 +87,7 @@ const transpileSass = (content) => {
     } catch (e) {
         console.error(e);
     }
-}
+};
 
 const transpileLess = async (content) => {
     try {
@@ -98,7 +101,7 @@ const transpileLess = async (content) => {
     } catch (e) {
         console.error(e);
     }
-}
+};
 
 async function transpile(content) {
     const extension = fileExtension(inputFile);
@@ -122,10 +125,12 @@ async function getFileContent() {
     const chunks = [];
 
     return new Promise((resolve, reject) =>
-        fs.createReadStream(inputFile)
-        .on('data', chunk => chunks.push(chunk))
-        .on('error', err => reject(err))
-        .on('close', () => resolve(chunks.join(''))));
+        fs
+            .createReadStream(inputFile)
+            .on('data', (chunk) => chunks.push(chunk))
+            .on('error', (err) => reject(err))
+            .on('close', () => resolve(chunks.join('')))
+    );
 }
 
 async function writeFileContent(outFile, content) {
@@ -151,12 +156,14 @@ async function generateCSS() {
 
     const plugins = [];
 
-    plugins.push(...[
-        require('postcss-custom-properties')({ preserve: false, exportTo, importFrom }),
-        require('postcss-calc'),
-        require('autoprefixer'),
-        require('postcss-preset-env')
-    ]);
+    plugins.push(
+        ...[
+            require('postcss-custom-properties')({ preserve: false, exportTo, importFrom }),
+            require('postcss-calc'),
+            require('autoprefixer'),
+            require('postcss-preset-env'),
+        ]
+    );
 
     if (minify && !watch) {
         plugins.push(require('postcss-csso'));
@@ -168,7 +175,7 @@ async function generateCSS() {
         css: addSourceMapURL(css),
         map: transpiled.map,
     };
-};
+}
 
 async function main() {
     if (!inputFile) {
@@ -195,7 +202,7 @@ async function main() {
             await writeFileContent(outFile, css);
         });
 
-        watcher.on('error', err => console.error(' [x] %s', err));
+        watcher.on('error', (err) => console.error(' [x] %s', err));
     }
 
     const { css, map } = await generateCSS();

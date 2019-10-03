@@ -7,6 +7,7 @@
         "cessie": "./bin.js"
     },
     "scripts": {
+        "prettier": "prettier --write index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "keywords": [
@@ -33,5 +34,20 @@
         "postcss-csso": "^3.0.0",
         "postcss-custom-properties": "^8.0.10",
         "postcss-preset-env": "^6.6.0"
+    },
+    "devDependencies": {
+        "husky": "^3.0.8",
+        "lint-staged": "^9.4.1",
+        "prettier": "^1.18.2"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "index.js": [
+            "prettier --write"
+        ]
     }
 }
