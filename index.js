@@ -6,6 +6,7 @@ const fileExtension = require('file-extension');
 const postcss = require('postcss');
 const sass = require('node-sass');
 const less = require('less');
+const cssParser = require('css');
 
 require('log-timestamp');
 
@@ -61,6 +62,16 @@ const cli = meow(`
 const [inputFile] = cli.input;
 const { outFile, minify, watch, sourceMap, importFrom, exportTo } = cli.flags;
 
+const transpileCss = (content) => {
+    try {
+        cssParser.parse(content, { source: inputFile });
+
+        return { css: content, map: '' };
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 const transpileSass = (content) => {
     try {
         const { css, map } = sass.renderSync({
@@ -94,7 +105,7 @@ async function transpile(content) {
 
     switch (extension) {
         case 'css':
-            return { css: content, map: '' };
+            return transpileCss(content);
 
         case 'scss':
             return await transpileSass(content);

@@ -1,6 +1,6 @@
 {
     "name": "cessie",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Transpile your CSS bundle to support CSS variables, calc, and future CSS for non supported browsers.",
     "main": "index.js",
     "bin": {
@@ -21,6 +21,7 @@
     "repository": "bjarneo/cessie",
     "dependencies": {
         "autoprefixer": "^9.5.1",
+        "css": "^2.2.4",
         "file-extension": "^4.0.5",
         "less": "^3.9.0",
         "log-timestamp": "^0.3.0",
