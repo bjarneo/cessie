@@ -27,7 +27,7 @@
         "less": "^3.9.0",
         "log-timestamp": "^0.3.0",
         "meow": "^5.0.0",
-        "node-sass": "^4.12.0",
+        "node-sass": "^7.0.0",
         "node-watch": "^0.6.2",
         "postcss": "^8.2.13",
         "postcss-calc": "^7.0.1",
